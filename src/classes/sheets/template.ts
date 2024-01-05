@@ -35,7 +35,7 @@ export default class Sheet<SheetDataType> {
   }
 
   private get header() {
-    const len = this.sheetInfo.label.length
+    const len = this.sheetInfo.label.length + 3 // CommonFields
     const range = this._sheet.getRange(1, 1, 1, len)
     return range
   }
@@ -53,11 +53,17 @@ export default class Sheet<SheetDataType> {
   }
 
   private get lastColumn() {
-    return this._sheet.getLastColumn()
+    return this.labels.length
+  }
+
+  get isClean() {
+    return this.lastRow === 1 // only label
   }
 
   private applyStyling() {
     const { styling } = this.sheetInfo
+
+    this._sheet.setFrozenRows(1)
 
     if (!styling) return
     if (styling.tabColor) this._sheet.setTabColor(styling.tabColor)
@@ -68,22 +74,24 @@ export default class Sheet<SheetDataType> {
 
   private applyLabeling() {
     this.header.setValues([this.labels])
+    this._sheet.deleteRows(11, 989)
+    this._sheet.deleteColumns(this.lastColumn + 1, 26 - this.lastColumn)
   }
 
   private createSheet() {
     const { name } = this.sheetInfo
-    const tmp = this._spread.insertSheet(name)
+    this._sheet = this._spread.insertSheet(name)
     this.applyStyling()
     this.applyLabeling()
 
-    return tmp
+    console.log(`Created Sheet: ${this.sheetInfo.name}`)
   }
 
   private accessSheet() {
-    const cr = this._spread.getSheetByName(this.sheetInfo.name)
-    if (cr === null) return this.createSheet()
+    this._sheet = this._spread.getSheetByName(this.sheetInfo.name)
+    if (this._sheet === null) this.createSheet()
 
-    return cr
+    return this._sheet
   }
 
   private arr2obj(arr: any[]) {
@@ -103,6 +111,19 @@ export default class Sheet<SheetDataType> {
     return true
   }
 
+  private format(data: SheetDataType[]) {
+    return data.map((cell, ix) => [
+      this.lastRow + ix,
+      ...Object.values(cell as Record<string, any>),
+      new Date(), // updated_at
+      new Date() // created_at
+    ])
+  }
+
+  initialize() {
+    this.accessSheet()
+  }
+
   dump() {
     const range = this._sheet.getDataRange()
     const values = range.getValues()
@@ -113,30 +134,30 @@ export default class Sheet<SheetDataType> {
   }
 
   append(data: SheetDataType[]) {
-    const validatedData = data.filter(this.validate)
+    const validatedData = data.filter((x) => this.validate(x))
+    const values = this.format(validatedData)
+
     const range = this._sheet.getRange(
       this.lastRow + 1,
       1,
-      validatedData.length,
+      values.length,
       this.labels.length
-    )
-
-    const values = validatedData.map((rw) =>
-      Object.values(rw as Record<string, any>)
     )
     range.setValues(values)
   }
 
   update(id: string, label: keyof SheetDataType, value: string) {
     const labelIndex = this.labels.indexOf(label)
+    // label doesn't exist
     if (labelIndex == -1) return null
 
     const idRnage = this._sheet.getRange(1, 1, this.lastRow, 1)
     const ids = idRnage.getValues().flat()
     const idIndex = ids.indexOf(id)
-
+    // id doesn't exist
     if (idIndex === -1) return null
 
     this._sheet.getRange(idIndex + 1, labelIndex + 1).setValue(value)
+    this._sheet.getRange(idIndex + 1, this.lastColumn - 1).setValue(new Date())
   }
 }

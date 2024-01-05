@@ -1,79 +1,41 @@
+import { CategoryDataType, PayerDataType, PaymentDataType } from './types/index'
+
 /* = = = = = = = = = = = = = = = = = = = = = = */
 /* = = = = = = =    CONSTANTS    = = = = = = = */
 /* = = = = = = = = = = = = = = = = = = = = = = */
 
-const NOTIFICATION = true
-const CONTACT_NAME = 'CONTACT_FORM'
-const NOTIFICATION_NAME = 'NOTIFICATION'
-const TITLE = 'お問い合わせを受け付けました'
-const MESSAGE = '下記内容でお問い合わせを受け付けました： '
-const SPREAD_ID = '1FIUZWcxbztU5TJMeZ41qxyAbuEBX9mIOI23t6gQ0NXE'
-const DEV = 'kentozuka22@gmail.com'
+export const SHEET_ID = '18xE9SIrzZEZ-Ld-QqlGRLTxpNu5LLf84z3QgAqXtdH4'
 
-/* = = = = = = = = = WORDS = = = = = = = = = */
-const S = {
-  EXPENDITURE: 'expenditure',
-  INCOME: 'income',
-  CATEGORY: 'category',
-  PAYER: 'payer',
-  PAYMENT: 'payment',
-  SUBSCRIPTION: 'subscription'
-}
+/* = = = = = = =    SEEDS    = = = = = = = */
+export const CATEGORY_SEED: CategoryDataType[] = [
+  { name: '食材費' },
+  { name: '間食費' },
+  { name: '外食費' },
+  { name: '日用品費' },
+  { name: '被服費' },
+  { name: '医療費' },
+  { name: '教養娯楽費' },
+  { name: '通信費' },
+  { name: '水道光熱費' },
+  { name: '住居費' },
+  { name: '美容費' },
+  { name: '交際費' },
+  { name: '移動費' },
+  { name: '特別費' },
+  { name: '雑費' }
+]
 
-const W = {
-  ID: 'id',
-  YEAR: 'year',
-  MONTH: 'month',
-  DATE: 'date',
-  DAY: 'day',
-  HOUR: 'hour',
-  PRICE: 'price',
-  NAME: 'name'
-}
+export const PAYMENT_SEED: PaymentDataType[] = [
+  { name: '現金' },
+  { name: 'QRコード決済' },
+  { name: 'クレジットカード' },
+  { name: '交通系' },
+  { name: 'デビットカード' },
+  { name: '銀行振り込み' }
+]
 
-const W_ID = (ct) => `${ct}_${W.ID}`
-
-/* = = = = = = = = = SHEETS = = = = = = = = = */
-
-const EXPENDITURE_SHEET = {
-  NAME: S.EXPENDITURE,
-  LABEL: [
-    W.ID,
-    W.YEAR,
-    W.MONTH,
-    W.DATE,
-    W.DAY,
-    W.HOUR,
-    W_ID(S.PAYMENT),
-    W.NAME,
-    W.PRICE,
-    W_ID(S.CATEGORY)
-  ]
-}
-
-const INCOME_SHEET = {
-  NAME: S.INCOME,
-  LABEL: [W.ID, W.YEAR, W.MONTH, W.DATE, W.DAY, W.NAME, W.PRICE, W_ID(S.PAYER)]
-}
-
-const CATEGORY_SHEET = {
-  NAME: S.CATEGORY,
-  LABEL: [W.ID, W.YEAR, W.MONTH, W.DATE, W.DAY, W.NAME, 'price', 'payer_id']
-}
-
-const PAYER_SHEET = {
-  NAME: S.PAYER,
-  LABEL: [W.ID, W.YEAR, W.MONTH, W.DATE, W.DAY, W.NAME, 'price', 'payer_id']
-}
-
-const PAYMENT_SHEET = {
-  NAME: S.PAYMENT,
-  LABEL: [W.ID, W.YEAR, W.MONTH, W.DATE, W.DAY, W.NAME, 'price', 'payer_id']
-}
-
-const SUBSCRIPTION_SHEET = {
-  NAME: S.SUBSCRIPTION,
-  LABEL: [W.ID, W.YEAR, W.MONTH, W.DATE, W.DAY, W.NAME, 'price', 'payer_id']
-}
-
-/* = = = = = = = = = SEED = = = = = = = = = */
+export const PAYER_SEED: PayerDataType[] = [
+  { name: 'イントロダクション' },
+  { name: 'SIDE HUSTLE' },
+  { name: 'もらい金' }
+]
